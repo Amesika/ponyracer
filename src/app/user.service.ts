@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { JwtInterceptor } from './jwt.interceptor';
 import { UserModel } from './models/user.model';
 
 @Injectable({
@@ -10,7 +11,7 @@ export class UserService {
   
   userEvents = new BehaviorSubject<UserModel|null>(null);
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,private jwtInterceptor: JwtInterceptor) {
     this.retrieveUser();
   }
 
@@ -27,6 +28,7 @@ export class UserService {
 
   storeLoggedInUser(user: UserModel): void {
     window.localStorage.setItem('rememberMe', JSON.stringify(user));
+    this.jwtInterceptor.setJwtToken(user.token);
     this.userEvents.next(user);
   }
 
@@ -34,6 +36,7 @@ export class UserService {
     const value = window.localStorage.getItem('rememberMe');
     if (value) {
       const user = JSON.parse(value) as UserModel;
+      this.jwtInterceptor.setJwtToken(user.token);
       this.userEvents.next(user);
     }
   }
@@ -41,5 +44,6 @@ export class UserService {
   logout(): void {
     this.userEvents.next(null);
     window.localStorage.removeItem('rememberMe');
+    this.jwtInterceptor.removeJwtToken();
   }
 }

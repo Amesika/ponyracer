@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { delay, Observable, of } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { RaceModel } from './models/race.model';
 
 @Injectable({
@@ -11,6 +12,6 @@ export class RaceService {
 
   list(): Observable<Array<RaceModel>> {
     const params = { status: 'PENDING' };
-    return this.http.get<Array<RaceModel>>('https://ponyracer.ninja-squad.com/api/races', { params });
+    return this.http.get<Array<RaceModel>>(`${environment.baseUrl}/api/races`, { params });
   }
 }
