@@ -8,10 +8,9 @@ import { UserModel } from './models/user.model';
   providedIn: 'root'
 })
 export class UserService {
-  
-  userEvents = new BehaviorSubject<UserModel|null>(null);
+  userEvents = new BehaviorSubject<UserModel | null>(null);
 
-  constructor(private http: HttpClient,private jwtInterceptor: JwtInterceptor) {
+  constructor(private http: HttpClient, private jwtInterceptor: JwtInterceptor) {
     this.retrieveUser();
   }
 
@@ -22,8 +21,8 @@ export class UserService {
 
   authenticate(credentials: { login: string; password: string }): Observable<UserModel> {
     return this.http
-    .post<UserModel>('https://ponyracer.ninja-squad.com/api/users/authentication', credentials)
-    .pipe(tap(user => this.storeLoggedInUser(user)));
+      .post<UserModel>('https://ponyracer.ninja-squad.com/api/users/authentication', credentials)
+      .pipe(tap(user => this.storeLoggedInUser(user)));
   }
 
   storeLoggedInUser(user: UserModel): void {

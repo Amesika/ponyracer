@@ -20,24 +20,20 @@ import { LiveComponent } from './live/live.component';
 
 @NgModule({
   declarations: [
-    AppComponent, 
-    MenuComponent, 
-    RacesComponent, 
-    RaceComponent, 
-    PonyComponent, 
-    FromNowPipe, 
-    HomeComponent, 
-    RegisterComponent, 
-    LoginComponent, BetComponent, LiveComponent
+    AppComponent,
+    MenuComponent,
+    RacesComponent,
+    RaceComponent,
+    PonyComponent,
+    FromNowPipe,
+    HomeComponent,
+    RegisterComponent,
+    LoginComponent,
+    BetComponent,
+    LiveComponent
   ],
-  imports: [
-    BrowserModule, 
-    FormsModule,
-    RouterModule.forRoot(ROUTES), 
-    HttpClientModule,
-    ReactiveFormsModule
-  ],
+  imports: [BrowserModule, FormsModule, RouterModule.forRoot(ROUTES), HttpClientModule, ReactiveFormsModule],
   providers: [{ provide: HTTP_INTERCEPTORS, useExisting: JwtInterceptor, multi: true }],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

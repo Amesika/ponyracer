@@ -15,7 +15,7 @@ export class LiveComponent implements OnInit, OnDestroy {
   poniesWithPosition: Array<PonyWithPositionModel> = [];
   positionSubscription: Subscription | null = null;
 
-  constructor(private raceService: RaceService, private route: ActivatedRoute) { }
+  constructor(private raceService: RaceService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     const id = +this.route.snapshot.paramMap.get('raceId')!;

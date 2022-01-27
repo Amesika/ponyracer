@@ -9,18 +9,17 @@ import { UserService } from '../user.service';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
-
-  loginCtrl: FormControl
-  passwordCtrl: FormControl
+  loginCtrl: FormControl;
+  passwordCtrl: FormControl;
   confirmPasswordCtrl: FormControl;
-  birthYearCtrl: FormControl
-  userForm: FormGroup
+  birthYearCtrl: FormControl;
+  userForm: FormGroup;
   passwordGroup: FormGroup;
-  registrationFailed= false;
+  registrationFailed = false;
 
-  constructor(fb: FormBuilder, private userService:UserService, private router:Router) {
-    this.loginCtrl = fb.control('', [Validators.required, Validators.minLength(3)])
-    this.passwordCtrl = fb.control('', Validators.required)
+  constructor(fb: FormBuilder, private userService: UserService, private router: Router) {
+    this.loginCtrl = fb.control('', [Validators.required, Validators.minLength(3)]);
+    this.passwordCtrl = fb.control('', Validators.required);
     this.birthYearCtrl = fb.control('', [Validators.required, Validators.min(1900), Validators.max(new Date().getFullYear())]);
     this.confirmPasswordCtrl = fb.control('', Validators.required);
     this.passwordGroup = fb.group(
@@ -36,11 +35,10 @@ export class RegisterComponent implements OnInit {
       login: this.loginCtrl,
       passwordForm: this.passwordGroup,
       birthYear: this.birthYearCtrl
-    })
+    });
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   register(): void {
     this.userService
@@ -56,5 +54,4 @@ export class RegisterComponent implements OnInit {
     const confirmPassword = control.get('confirmPassword')!.value;
     return password !== confirmPassword ? { matchingError: true } : null;
   }
-
 }

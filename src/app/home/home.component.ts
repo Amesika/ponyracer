@@ -9,7 +9,6 @@ import { UserService } from '../user.service';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-
   user: UserModel | null = null;
   userEventsSubscription: Subscription | null = null;
 
@@ -22,5 +21,4 @@ export class HomeComponent implements OnInit {
   ngOnDestroy(): void {
     this.userEventsSubscription?.unsubscribe();
   }
-
 }

@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { interval, map, Observable, take } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 import { environment } from '../environments/environment';
-import { RaceModel } from './models/race.model';
+import { WsService } from './ws.service';
+import { RaceModel, LiveRaceModel } from './models/race.model';
 import { PonyWithPositionModel } from './models/pony.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RaceService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private wsService: WsService) {}
 
   list(): Observable<Array<RaceModel>> {
     const params = { status: 'PENDING' };
@@ -30,41 +31,6 @@ export class RaceService {
   }
 
   live(raceId: number): Observable<Array<PonyWithPositionModel>> {
-    return interval(1000).pipe(
-      take(101),
-      map(position => [
-        {
-          id: 1,
-          name: 'Superb Runner',
-          color: 'BLUE',
-          position
-        },
-        {
-          id: 2,
-          name: 'Awesome Fridge',
-          color: 'GREEN',
-          position
-        },
-        {
-          id: 3,
-          name: 'Great Bottle',
-          color: 'ORANGE',
-          position
-        },
-        {
-          id: 4,
-          name: 'Little Flower',
-          color: 'YELLOW',
-          position
-        },
-        {
-          id: 5,
-          name: 'Nice Rock',
-          color: 'PURPLE',
-          position
-        }
-      ])
-    );
+    return this.wsService.connect<LiveRaceModel>(`/race/${raceId}`).pipe(map(liveRace => liveRace.ponies));
   }
-  
 }
