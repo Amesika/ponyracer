@@ -12,14 +12,24 @@ import { RouterModule } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { ROUTES } from './app.routes';
 import { RegisterComponent } from './register/register.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { LoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [
-    AppComponent, MenuComponent, RacesComponent, RaceComponent, PonyComponent, FromNowPipe, HomeComponent, RegisterComponent
+    AppComponent, 
+    MenuComponent, 
+    RacesComponent, 
+    RaceComponent, 
+    PonyComponent, 
+    FromNowPipe, 
+    HomeComponent, 
+    RegisterComponent, 
+    LoginComponent
   ],
   imports: [
     BrowserModule, 
+    FormsModule,
     RouterModule.forRoot(ROUTES), 
     HttpClientModule,
     ReactiveFormsModule
