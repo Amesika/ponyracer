@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+
 import { PonyModel } from '../models/pony.model';
 
 @Component({
@@ -6,21 +7,17 @@ import { PonyModel } from '../models/pony.model';
   templateUrl: './pony.component.html',
   styleUrls: ['./pony.component.css']
 })
-export class PonyComponent implements OnInit {
+export class PonyComponent {
   @Input() ponyModel!: PonyModel;
   @Input() isRunning = false;
+  @Input() isBoosted: boolean | undefined = false;
   @Output() readonly ponyClicked = new EventEmitter<PonyModel>();
 
-  constructor() {}
-
-  ngOnInit(): void {}
-
-  getPonyImageUrl() {
-    if (this.isRunning) return `assets/images/pony-${this.ponyModel.color.toLowerCase()}-running.gif`;
-    return `assets/images/pony-${this.ponyModel.color.toLowerCase()}.gif`;
+  getPonyImageUrl(): string {
+    return `assets/images/pony-${this.ponyModel.color.toLowerCase()}${this.isBoosted ? '-rainbow' : this.isRunning ? '-running' : ''}.gif`;
   }
 
-  clicked() {
+  clicked(): void {
     this.ponyClicked.emit(this.ponyModel);
   }
 }

@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { catchError, concat, EMPTY, of, Subscription, switchMap } from 'rxjs';
+
 import { UserModel } from '../models/user.model';
 import { UserService } from '../user.service';
 
@@ -9,8 +10,8 @@ import { UserService } from '../user.service';
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.css']
 })
-export class MenuComponent implements OnInit {
-  navbarCollapsed: boolean = true;
+export class MenuComponent implements OnInit, OnDestroy {
+  navbarCollapsed = true;
 
   user: UserModel | null = null;
   userEventsSubscription: Subscription | null = null;
@@ -18,14 +19,16 @@ export class MenuComponent implements OnInit {
   constructor(private userService: UserService, private router: Router) {}
 
   ngOnInit(): void {
-    this.userEventsSubscription = this.userService.userEvents.subscribe(user => (this.user = user));
+    this.userEventsSubscription = this.userService.userEvents
+      .pipe(switchMap(user => (user ? concat(of(user), this.userService.scoreUpdates(user.id).pipe(catchError(() => EMPTY))) : of(null))))
+      .subscribe(userWithScore => (this.user = userWithScore));
   }
 
   ngOnDestroy(): void {
     this.userEventsSubscription?.unsubscribe();
   }
 
-  toggleNavbar() {
+  toggleNavbar(): void {
     this.navbarCollapsed = !this.navbarCollapsed;
   }
 

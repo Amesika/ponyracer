@@ -1,6 +1,19 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { filter, Subscription, switchMap, tap } from 'rxjs';
+import {
+  bufferToggle,
+  catchError,
+  EMPTY,
+  filter,
+  groupBy,
+  interval,
+  map,
+  mergeMap,
+  Subject,
+  Subscription,
+  switchMap,
+  throttleTime
+} from 'rxjs';
 
 import { RaceService } from '../race.service';
 import { RaceModel } from '../models/race.model';
@@ -17,19 +30,15 @@ export class LiveComponent implements OnInit, OnDestroy {
   error = false;
   winners: Array<PonyWithPositionModel> = [];
   betWon: boolean | null = null;
+  clickSubject = new Subject<PonyWithPositionModel>();
 
   constructor(private raceService: RaceService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    const id = +this.route.snapshot.paramMap.get('raceId')!;
-    this.positionSubscription = this.raceService
-      .get(id)
-      .pipe(
-        tap((race: RaceModel) => (this.raceModel = race)),
-        filter(race => this.raceModel!.status !== 'FINISHED'),
-        switchMap(race => this.raceService.live(race.id))
-      )
-      .subscribe({
+    this.raceModel = this.route.snapshot.data['race'];
+
+    if (this.raceModel!.status !== 'FINISHED') {
+      this.positionSubscription = this.raceService.live(this.raceModel!.id).subscribe({
         next: positions => {
           this.poniesWithPosition = positions;
           this.raceModel!.status = 'RUNNING';
@@ -41,11 +50,31 @@ export class LiveComponent implements OnInit, OnDestroy {
           this.betWon = this.winners.some(pony => pony.id === this.raceModel!.betPonyId);
         }
       });
+    }
+
+    this.clickSubject
+      .pipe(
+        groupBy(pony => pony.id, { element: pony => pony.id }),
+        mergeMap(obs => obs.pipe(bufferToggle(obs, () => interval(1000)))),
+        filter(array => array.length >= 5),
+        throttleTime(1000),
+        map(array => array[0]),
+        switchMap(ponyId => this.raceService.boost(this.raceModel!.id, ponyId).pipe(catchError(() => EMPTY)))
+      )
+      .subscribe(() => {});
   }
 
   ngOnDestroy(): void {
     if (this.positionSubscription) {
       this.positionSubscription.unsubscribe();
     }
+  }
+
+  onClick(pony: PonyWithPositionModel): void {
+    this.clickSubject.next(pony);
+  }
+
+  ponyById(index: number, pony: PonyWithPositionModel): number {
+    return pony.id;
   }
 }

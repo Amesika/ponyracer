@@ -1,8 +1,11 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { JwtInterceptor } from './jwt.interceptor';
+
+import { environment } from '../environments/environment';
 import { UserModel } from './models/user.model';
+import { JwtInterceptor } from './jwt.interceptor';
+import { WsService } from './ws.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,18 +13,18 @@ import { UserModel } from './models/user.model';
 export class UserService {
   userEvents = new BehaviorSubject<UserModel | null>(null);
 
-  constructor(private http: HttpClient, private jwtInterceptor: JwtInterceptor) {
+  constructor(private http: HttpClient, private jwtInterceptor: JwtInterceptor, private wsService: WsService) {
     this.retrieveUser();
   }
 
   register(login: string, password: string, birthYear: number): Observable<UserModel> {
     const body = { login, password, birthYear };
-    return this.http.post<UserModel>('https://ponyracer.ninja-squad.com/api/users', body);
+    return this.http.post<UserModel>(`${environment.baseUrl}/api/users`, body);
   }
 
   authenticate(credentials: { login: string; password: string }): Observable<UserModel> {
     return this.http
-      .post<UserModel>('https://ponyracer.ninja-squad.com/api/users/authentication', credentials)
+      .post<UserModel>(`${environment.baseUrl}/api/users/authentication`, credentials)
       .pipe(tap(user => this.storeLoggedInUser(user)));
   }
 
@@ -44,5 +47,13 @@ export class UserService {
     this.userEvents.next(null);
     window.localStorage.removeItem('rememberMe');
     this.jwtInterceptor.removeJwtToken();
+  }
+
+  scoreUpdates(userId: number): Observable<UserModel> {
+    return this.wsService.connect<UserModel>(`/player/${userId}`);
+  }
+
+  isLoggedIn(): boolean {
+    return !!window.localStorage.getItem('rememberMe');
   }
 }
