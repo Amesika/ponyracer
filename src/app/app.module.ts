@@ -11,13 +11,18 @@ import { FromNowPipe } from './from-now.pipe';
 import { RouterModule } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { ROUTES } from './app.routes';
+import { RegisterComponent } from './register/register.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
-    AppComponent, MenuComponent, RacesComponent, RaceComponent, PonyComponent, FromNowPipe, HomeComponent
+    AppComponent, MenuComponent, RacesComponent, RaceComponent, PonyComponent, FromNowPipe, HomeComponent, RegisterComponent
   ],
   imports: [
-    BrowserModule, RouterModule.forRoot(ROUTES), HttpClientModule
+    BrowserModule, 
+    RouterModule.forRoot(ROUTES), 
+    HttpClientModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
