@@ -2,22 +2,19 @@
   <div class="col-md-6 offset-md-3">
     <h1>Sign up</h1>
 
-    <div id="registration-error" class="alert alert-danger" *ngIf="registrationFailed">
-      <button type="button" class="btn-close" aria-label="Close" (click)="registrationFailed = false"></button>
-      Try again with another login.
-    </div>
+    <pr-alert *ngIf="registrationFailed" type="danger" (closed)="registrationFailed = false">Try again with another login.</pr-alert>
 
-    <form (ngSubmit)="register()" [formGroup]="userForm" autocomplete="off">
+    <form (ngSubmit)="register()" [formGroup]="userForm">
       <div class="mb-3">
         <label for="login" class="form-label" id="login-label">Login</label>
         <input id="login" class="form-control" formControlName="login" />
-        <div *ngIf="loginCtrl.dirty && loginCtrl.hasError('required')" id="login-warning">Login is required</div>
+        <div id="login-warning" *ngIf="loginCtrl.dirty && loginCtrl.hasError('required')">Login is required</div>
         <div id="login-length-error" *ngIf="loginCtrl.dirty && loginCtrl.hasError('minlength')">
           Your login should be at least 3 characters
         </div>
       </div>
 
-      <div formGroupName="passwordForm" autocomplete="off">
+      <div formGroupName="passwordForm">
         <div class="mb-3">
           <label for="password" class="form-label">Password</label>
           <input id="password" class="form-control" type="password" formControlName="password" />
