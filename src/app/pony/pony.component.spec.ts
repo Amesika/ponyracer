@@ -8,9 +8,8 @@ describe('PonyComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PonyComponent ]
-    })
-    .compileComponents();
+      declarations: [PonyComponent]
+    }).compileComponents();
   });
 
   beforeEach(() => {
