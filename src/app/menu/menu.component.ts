@@ -1,6 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, concat, EMPTY, of, Subscription, switchMap } from 'rxjs';
+import { catchError, concat, EMPTY, Observable, of, shareReplay, switchMap } from 'rxjs';
 
 import { UserModel } from '../models/user.model';
 import { UserService } from '../user.service';
@@ -8,24 +8,21 @@ import { UserService } from '../user.service';
 @Component({
   selector: 'pr-menu',
   templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.css']
+  styleUrls: ['./menu.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MenuComponent implements OnInit, OnDestroy {
+export class MenuComponent implements OnInit {
   navbarCollapsed = true;
 
-  user: UserModel | null = null;
-  userEventsSubscription: Subscription | null = null;
+  userEvents!: Observable<UserModel | null>;
 
   constructor(private userService: UserService, private router: Router) {}
 
   ngOnInit(): void {
-    this.userEventsSubscription = this.userService.userEvents
-      .pipe(switchMap(user => (user ? concat(of(user), this.userService.scoreUpdates(user.id).pipe(catchError(() => EMPTY))) : of(null))))
-      .subscribe(userWithScore => (this.user = userWithScore));
-  }
-
-  ngOnDestroy(): void {
-    this.userEventsSubscription?.unsubscribe();
+    this.userEvents = this.userService.userEvents.pipe(
+      switchMap(user => (user ? concat(of(user), this.userService.scoreUpdates(user.id).pipe(catchError(() => EMPTY))) : of(null))),
+      shareReplay()
+    );
   }
 
   toggleNavbar(): void {
